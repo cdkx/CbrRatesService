@@ -1,20 +1,18 @@
 package ru.eremin.springbootprometheusgrafana.apiclient.dto;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
-import lombok.Data;
 import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import java.util.List;
 
 
-@Data
 @JsonRootName("ValCurs")
-public class DailyValCurs {
-    @JacksonXmlProperty(isAttribute = true, localName = "Date")
-    private String date;
+public record CurrencyHistoryResponse(
+        @JacksonXmlProperty(isAttribute = true, localName = "ID")
+        String id,
 
-    @JacksonXmlElementWrapper(useWrapping = false)
-    @JacksonXmlProperty(localName = "Valute")
-    private List<Valute> valutes;
+        @JacksonXmlElementWrapper(useWrapping = false)
+        @JacksonXmlProperty(localName = "Record")
+        List<HistoricalRate> history) {
 }
