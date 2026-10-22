@@ -18,12 +18,17 @@ spring:
         batch_size: 50
       order_inserts: true
       order_updates: true
+  http:
+    serviceclient:
+      cbr:
+        base-url: "https://www.cbr.ru"
+        connect-timeout: 2s
+        read-timeout: 5s
 
 server:
   port: ${SERVER_PORT:8080}
 
 cbr:
-  base-url: "https://cbr.ru"
   scheduler:
     cron: 0 0 10-21/1 * * MON-SAT
     zone: Europe/Moscow
@@ -33,7 +38,7 @@ logging:
     root: INFO
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    ru.eremin.springbootprometheusgrafana.apiclient.CbrFeignClient: DEBUG
+    ru.eremin.springbootprometheusgrafana.apiclient.ru.eremin.springbootprometheusgrafana.apiclient.CbrClient: DEBUG
     feign: DEBUG
     org.apache.http: DEBUG
 

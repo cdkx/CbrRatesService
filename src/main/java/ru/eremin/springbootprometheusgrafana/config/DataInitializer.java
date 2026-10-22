@@ -2,6 +2,7 @@ package ru.eremin.springbootprometheusgrafana.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -17,17 +18,16 @@ import java.time.ZoneId;
 public class DataInitializer implements ApplicationRunner {
     private final RatesService ratesService;
 
+    @Value("${cbr.scheduler.zone:Europe/Moscow}")
+    private String zoneIdStr;
+
     @Override
     public void run(ApplicationArguments args) {
         log.info("Starting initial data fetch from CBR on application startup...");
         try {
-            // 1. Загружаем базовый справочник валют (XML_val.asp)
             ratesService.fetchAndSaveCurrencies();
 
-            // 2. Загружаем курсы за сегодня (XML_daily.asp). 
-            // Это критически важно, так как именно здесь присутствуют CharCode (USD, EUR) и NumCode,
-            // которых нет в базовом справочнике XML_val.asp.
-            LocalDate today = LocalDate.now(ZoneId.of("${cbr.scheduler.zone}"));
+            LocalDate today = LocalDate.now(ZoneId.of(zoneIdStr));
             ratesService.fetchAndSaveDailyRates(today);
 
             log.info("Initial data fetch completed successfully. Database is ready.");

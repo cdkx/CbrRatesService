@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import ru.eremin.springbootprometheusgrafana.apiclient.CbrFeignClient;
+import ru.eremin.springbootprometheusgrafana.apiclient.CbrClient;
 import ru.eremin.springbootprometheusgrafana.apiclient.dto.CurrencyCatalogResponse;
 import ru.eremin.springbootprometheusgrafana.apiclient.dto.CurrencyHistoryResponse;
 import ru.eremin.springbootprometheusgrafana.apiclient.dto.CurrencyInfo;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class RatesServiceImpl implements RatesService {
-    private final CbrFeignClient cbrClient;
+    private final CbrClient cbrClient;
     private final CurrencyRepository currencyRepository;
     private final ExchangeRateRepository exchangeRateRepository;
     private final RateMapper rateMapper;
