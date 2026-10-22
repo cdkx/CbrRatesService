@@ -2,6 +2,7 @@ package ru.eremin.springbootprometheusgrafana.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,12 +21,12 @@ public class RateController {
     private final RatesService ratesService;
 
     @GetMapping
-    public List<RateDto> getRates(
+    public ResponseEntity<List<RateDto>> getRates(
             @RequestParam String charCode,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo) {
 
         if (dateFrom == null) dateFrom = dateTo;
-        return ratesService.getRates(charCode, dateFrom, dateTo);
+        return ResponseEntity.ok(ratesService.getRates(charCode, dateFrom, dateTo));
     }
 }

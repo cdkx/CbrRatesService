@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import ru.eremin.springbootprometheusgrafana.service.RatesService;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 
 @Slf4j
@@ -26,7 +27,8 @@ public class DataInitializer implements ApplicationRunner {
             // 2. Загружаем курсы за сегодня (XML_daily.asp). 
             // Это критически важно, так как именно здесь присутствуют CharCode (USD, EUR) и NumCode,
             // которых нет в базовом справочнике XML_val.asp.
-            ratesService.fetchAndSaveDailyRates(LocalDate.now());
+            LocalDate today = LocalDate.now(ZoneId.of("${cbr.scheduler.zone}"));
+            ratesService.fetchAndSaveDailyRates(today);
 
             log.info("Initial data fetch completed successfully. Database is ready.");
         } catch (Exception e) {

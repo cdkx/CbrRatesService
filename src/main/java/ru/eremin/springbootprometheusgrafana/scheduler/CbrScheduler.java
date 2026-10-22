@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import ru.eremin.springbootprometheusgrafana.service.RatesService;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 
 @Slf4j
@@ -21,7 +22,8 @@ public class CbrScheduler {
     public void fetchDailyRates() {
         log.info("Starting scheduled CBR rates fetch");
         try {
-            ratesService.fetchAndSaveDailyRates(LocalDate.now());
+            LocalDate today = LocalDate.now(ZoneId.of("Europe/Moscow"));
+            ratesService.fetchAndSaveDailyRates(today);
             log.info("Finished scheduled CBR rates fetch successfully");
         } catch (Exception e) {
             log.error("Error fetching CBR rates", e);

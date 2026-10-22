@@ -14,7 +14,7 @@ public record DailyRatesResponse(
 
         @JacksonXmlElementWrapper(useWrapping = false)
         @JacksonXmlProperty(localName = "Valute")
-        List<DailyRate> valutes
+        List<DailyRate> rates
 
 ) {
 }

@@ -48,14 +48,14 @@ public class RatesServiceImpl implements RatesService {
     @Transactional
     public void fetchAndSaveDailyRates(LocalDate date) {
         String dateReq = date.format(CBR_REQ_DATE_FORMATTER);
-        DailyRatesResponse dailyValCurs = cbrClient.getDailyRates(dateReq);
+        DailyRatesResponse dailyRates = cbrClient.getDailyRates(dateReq);
 
-        if (dailyValCurs == null || dailyValCurs.valutes() == null) {
+        if (dailyRates == null || dailyRates.rates() == null) {
             log.warn("No data received from CBR for date {}", date);
             return;
         }
 
-        LocalDate actualDate = LocalDate.parse(dailyValCurs.date(), CBR_DATE_FORMATTER);
+        LocalDate actualDate = LocalDate.parse(dailyRates.date(), CBR_DATE_FORMATTER);
 
         Map<String, Currency> currencyMap = currencyRepository.findAll().stream()
                 .collect(Collectors.toMap(Currency::getCbrId, Function.identity()));
@@ -65,26 +65,26 @@ public class RatesServiceImpl implements RatesService {
         List<Currency> newCurrencies = new ArrayList<>();
         List<ExchangeRate> ratesToSave = new ArrayList<>();
 
-        for (DailyRate valute : dailyValCurs.valutes()) {
-            Currency currency = currencyMap.get(valute.id());
+        for (DailyRate rate : dailyRates.rates()) {
+            Currency currency = currencyMap.get(rate.id());
 
             if (currency == null) {
                 currency = new Currency();
-                currency.setCbrId(valute.id());
-                currency.setCharCode(valute.charCode());
-                currency.setNumCode(valute.numCode());
-                currency.setName(valute.name());
+                currency.setCbrId(rate.id());
+                currency.setCharCode(rate.charCode());
+                currency.setNumCode(rate.numCode());
+                currency.setName(rate.name());
                 newCurrencies.add(currency);
                 currencyMap.put(currency.getCbrId(), currency);
             }
 
             if (currency.getId() != null && !existingRateCurrencyIds.contains(currency.getId())) {
-                ExchangeRate rate = new ExchangeRate();
-                rate.setCurrency(currency);
-                rate.setRateDate(actualDate);
-                rate.setNominal(Integer.parseInt(valute.nominal()));
-                rate.setValue(parseValue(valute.value()));
-                ratesToSave.add(rate);
+                ExchangeRate rateToSave = new ExchangeRate();
+                rateToSave.setCurrency(currency);
+                rateToSave.setRateDate(actualDate);
+                rateToSave.setNominal(Integer.parseInt(rate.nominal()));
+                rateToSave.setValue(parseValue(rate.value()));
+                ratesToSave.add(rateToSave);
             }
         }
 
@@ -140,16 +140,16 @@ public class RatesServiceImpl implements RatesService {
 
         List<ExchangeRate> ratesToSave = new ArrayList<>();
 
-        for (HistoricalRate record : dynamic.history()) {
-            LocalDate recordDate = LocalDate.parse(record.date(), CBR_DATE_FORMATTER);
+        for (HistoricalRate rate : dynamic.history()) {
+            LocalDate recordDate = LocalDate.parse(rate.date(), CBR_DATE_FORMATTER);
 
             if (!existingDates.contains(recordDate)) {
-                ExchangeRate rate = new ExchangeRate();
-                rate.setCurrency(currency);
-                rate.setRateDate(recordDate);
-                rate.setNominal(Integer.parseInt(record.nominal()));
-                rate.setValue(parseValue(record.value()));
-                ratesToSave.add(rate);
+                ExchangeRate rateToSave = new ExchangeRate();
+                rateToSave.setCurrency(currency);
+                rateToSave.setRateDate(recordDate);
+                rateToSave.setNominal(Integer.parseInt(rate.nominal()));
+                rateToSave.setValue(parseValue(rate.value()));
+                ratesToSave.add(rateToSave);
             }
         }
 
@@ -162,8 +162,8 @@ public class RatesServiceImpl implements RatesService {
     @Override
     @Transactional
     public void fetchAndSaveCurrencies() {
-        CurrencyCatalogResponse valuta = cbrClient.getCurrencies();
-        if (valuta == null || valuta.items() == null) {
+        CurrencyCatalogResponse currencies = cbrClient.getCurrencies();
+        if (currencies == null || currencies.items() == null) {
             log.warn("No currencies data received from CBR");
             return;
         }
@@ -173,17 +173,17 @@ public class RatesServiceImpl implements RatesService {
 
         List<Currency> currenciesToSave = new ArrayList<>();
 
-        for (CurrencyInfo item : valuta.items()) {
-            Currency currency = currencyMap.get(item.id());
+        for (CurrencyInfo currencyInfo : currencies.items()) {
+            Currency currency = currencyMap.get(currencyInfo.id());
 
             if (currency == null) {
                 currency = new Currency();
-                currency.setCbrId(item.id());
+                currency.setCbrId(currencyInfo.id());
             }
 
-            currency.setName(item.name());
-            currency.setCharCode(item.isoCharCode());
-            currency.setNumCode(item.isoNumCode());
+            currency.setName(currencyInfo.name());
+            currency.setCharCode(currencyInfo.isoCharCode());
+            currency.setNumCode(currencyInfo.isoNumCode());
 
             currenciesToSave.add(currency);
         }
