@@ -14,5 +14,6 @@ public record CurrencyHistoryResponse(
 
         @JacksonXmlElementWrapper(useWrapping = false)
         @JacksonXmlProperty(localName = "Record")
-        List<HistoricalRate> history) {
+        List<HistoricalRate> history
+) {
 }

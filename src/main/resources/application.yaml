@@ -30,7 +30,7 @@ server:
 
 cbr:
   scheduler:
-    cron: 0 0 10-21/1 * * MON-SAT
+    cron: 0 0 10-21/1 * * TUE-SAT
     zone: Europe/Moscow
 
 logging:

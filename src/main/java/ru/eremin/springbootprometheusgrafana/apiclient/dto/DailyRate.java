@@ -23,5 +23,6 @@ public record DailyRate(
         String value,
 
         @JacksonXmlProperty(localName = "VunitRate")
-        String vunitRate) {
+        String vunitRate
+) {
 }
